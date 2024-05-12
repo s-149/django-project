@@ -1,0 +1,482 @@
+## Django Project
+=================================================
+
+=================================================
+- menginstall python
+
+- unduh python installer
+    * url
+    https://www.python.org/downloads/
+
+    * install python
+    * use path
+
+=================================================
+
+=================================================
+- membuat virtual environment baru
+- fungsinya agar project terisolasi dan tidak mencampuri pada project yg lain
+
+- upgrade pip jika diperlukan 
+    * console
+    python -m pip install --upgrade pip
+
+- untuk membuat virtual environment baru
+    * console
+    python -m venv nama_virtual_environment
+
+    * contoh 
+    python -m venv Env 
+
+- mengaktifkan virtual environment
+    * console
+    Env\Scripts\activate.bat
+
+- menonaktifkan virtual environment
+    * console
+    deactivate
+
+====================================================
+
+====================================================
+- menginstall package django
+    * console
+    pip install Django==version
+
+    * contoh
+    pip install Django==5.0.6
+====================================================
+
+====================================================
+- membuat project baru
+- akan menghasilkan struktur project
+    * console
+    django-admin startproject nama_project
+
+    * contoh 
+    django-admin startproject project
+
+- membuat app baru
+- akan menghasilkan struktur app yg baru
+    * console
+    manage.py startapp nama_app
+
+    *contoh
+    manage.py startapp blog
+
+=====================================================
+
+=====================================================
+- mengaktifkan server django
+- akan mengaktifkan server yg dapat diakses menggunakan browser menggunakan url http://127.0.0.1:8000/
+- http://127.0.0.1:8000/ merupakan baseurl pada server lokal
+    * console
+    manage.py runserver
+
+- menonaktifkan server
+    * ketikan CTRL+C secara bersamaan
+    CTRL+C
+
+=====================================================
+
+=====================================================
+- integrasi database
+
+- install package wheel
+    * console
+    pip install wheel
+
+- install package mysql
+    * console
+    pip install mysql
+
+- config setting
+    * sintaks
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+
+    menjadi
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'django_project',
+            'USER': 'user_db',
+            'PASSWORD' : 'password_db',
+        }
+    }
+
+- migrate database
+    * console 
+    manage.py migrate
+=====================================================
+
+=====================================================
+- mengakses halaman admin
+
+- membuat superuser baru
+    * console
+    manage.py createsuperuser
+
+    * input
+    Username : admin
+    Email address: admin@gmail.com
+    Password: admin1234
+    Password (again): admin1234
+    The password is too similar to the username.
+    This password is too common.
+    Bypass password validation and create user anyway? [y/N]: y
+    Superuser created successfully.
+
+- login
+    * url
+    http://127.0.0.1:8000/admin
+
+    * account
+    username : admin
+    password : admin1234
+
+=====================================================
+
+=====================================================
+- transaksi database
+
+- buat model
+- file model biasanya telah tersedia setiap anda membuat app baru jadi anda bisa langsung mendefinisikan schemanya
+    * sintaks
+    from django.db import models
+
+    # Create your models here. (contohnya saya akan membuat table post dengan field title dan body)
+    class Post(models.Model):
+        title = models.CharField(max_length=255)
+        body = models.TextField()
+
+- jalankan makemigrations agar model digenerate menjadi schema database
+- setelah menjalankan perintah ini di command line maka akan dibuatkan file baru conntohnya 0001_initial.py
+    * console 
+    manage.py makemigrations
+
+- jalankan migrate agar tabel ditambahkan ke database
+    * console 
+    manage.py migrate
+    
+
+=====================================================
+
+=====================================================
+- transaksi admin site 
+
+- agar tabel post dapat tampil dan bisa langsung dikelola dalam halaman admin
+- isi file admin pada masing-masing app 
+    * console 
+    from django.contrib import admin
+
+    # Register your models here. (saya menambahkan model post yg telah dibuat sebelumnya dan meregistrasikanya)
+    from .models import Post
+    admin.site.register(Post)
+    
+    # mendefinisikan key yg akan ditampilkan pada site admin
+    def __str__(self):
+        return "{}".format (self.title)
+
+    * anda dapat langsung mengeceknya dihalaman admin apakah post telah ditambahkan
+    
+
+=====================================================
+
+=====================================================
+- transaksi query database
+
+- import model 
+    * sintaks 
+    from .models import Post // saya menambahkan model post
+
+- query database
+- menampilkan seluruh data
+    * sintaks
+    Post.object.all() // untuk memanggil semua isi tabel post
+
+    * contoh
+    posts = Post.objects.all()
+
+- menampilkan data secara custom (value dari key harus sama persis karena python case sensitif)
+    * sintaks
+    Post.object.get(id)
+
+    * contoh
+    posts = Post.objects.get(id = 2)
+
+- menampilkan data secara custom (value dari key harus sama tetapi boleh menggunkakan opercase/huruf kapital dan kecil yg penting katanya sama)
+    * sintaks
+    Post.object.get(id)
+
+    * contoh
+    posts = Post.objects.get(id__iexact = 2)
+
+    -- ini berlaku untuk setiap query dapat menggunakan itu
+
+- menampilkan data filter
+    * sintaks
+    Post.object.filter(title)
+
+    * contoh
+    posts = Post.objects.filter(title = "title baru")
+
+- menampilkan data kecuali
+    * sintaks
+    Post.object.exclude(title)
+
+    * contoh
+    posts = Post.objects.exclude(title = "title baru")
+
+- mengurutkan data
+    * sintaks
+    Post.object.order_by(title)
+
+    * contoh
+    posts = Post.objects.order_by(title)
+
+- menambahkan data
+    * sintaks
+    Post.objects.create()
+
+    * contoh
+    posts = Post.objects.create(title = 'hello', body = 'isi body')
+
+- menghapus data
+    * sintaks
+    Post.objects.all()[id_data].delete()
+
+    * contoh
+    posts = Post.objects.all()[3]
+    deleteData = posts.delete()
+
+- mengupdate data
+    * sintaks
+    Post.objects.all()[id_data].title = 'title diupdate'.save()
+
+    * contoh
+    posts = Post.objects.all()[3]
+    posts.title = 'title diupdate'
+    updateData = posts.save()
+    
+
+=====================================================
+
+=====================================================
+- static method
+- ini dapat membantu untuk membuat sebuah file html static dan dapat dijadikan sebagai blueprint
+
+    * sintaks
+    for -> endfor // untuk menampilkan data dari query posts diatas
+    include // untuk menambahkan sintaks dari file yg lain
+
+    * contoh 
+    {% for post in Post %}
+    <h3>{{post.title}}</h3>
+    <p>{{post.body}}</p>
+    {% endfor %}
+    
+
+=====================================================
+
+=====================================================
+- transaksi url
+
+- url dinamis
+- fungsinya untuk menangkap semua endpoint yg di isi oleh user, berguna dan cocok untuk filter data
+    * file urls.py
+    - tambahkan di regular expression nya
+    (?P<input>[0-9]+)/ // untuk angka
+    (?P<input>[\w]+)/ // untuk huruf, w artinya word
+    (?P<input>[\w-]+)/ // untuk huruf yg dicustom dengan - atau desh
+    (?P<input>[\w_]+)/ // untuk huruf yg dicustom dengan _ dst bisa disesuaikan lagi
+
+    * custom
+    (?P<input>[0-9]{4})/ // hanya dapat menangkap sampai 4 isi parameter saja kalo lebih menjadi error (ganti + menjadi sesuai kebutuhan) 
+
+    * file views.py 
+    input // tambahkan diparameternya
+
+    - atau menggunakan keyword kwargs
+    - outputnya akan menjadi dictionary contohnya {parameter1:'123', parameter2:'1234' dst}
+
+    * sintaks
+    **kwargs // ini bisa disesuaikan keywordnya, misalkan menjadi **input
+
+    - untuk menangkap datanya bisa menggunakan pemanggilan untuk dictionary menggunakan key
+    * sintaks
+
+    * contoh pemanggilan
+    ouput1 = input['parameter1'] // jika keyword menggunakan inisial input seperti pada contoh diatas
+    ouput2 = input['parameter2']
+
+    * contohnya pada file urls.py
+    ======================================
+    from django.contrib import admin
+    from django.urls import path, include
+
+    from . import views
+
+    urlpatterns = [
+        path('(?P<input>[0-9]+)/', admin.site.urls),
+    ]
+    ========================================
+
+    * contoh pada file views.py
+    ========================================
+    from django.shortcuts import render
+
+    from .models import Post
+
+    def index(request, input):
+        posts = Post.objects.all()
+        print(posts)
+        context = {
+            'title': 'Blog',
+            'heading': 'Blog',
+            'subheading': 'jurnal kelas terbuka',
+            'Post': posts,
+        }
+        return render(request, 'blog/index.html', context)
+    ========================================
+
+- slugify
+- untuk menangkap semua link yg diinput oleh user, pengembangan dari regular expression custom yg diatas
+    * file urls.py
+    - tambahkan di regular expression nya
+    post/(?P<input>[\w-]+)/ // untuk huruf yg dicustom dengan - atau desh
+
+    * file models.py
+    - menambahkan library slugify
+    from django.utils.text import slugify
+
+    - menambahkan method save()
+    def save(self):
+
+    - custome file admin.py agar datanya tetap ditampilkan
+
+    * contoh sintaks file models.py
+    from django.db import models
+    from
+    django.utils.text import slugify
+    # Create your models here.
+    class Post (models.Model):
+        judul = models.CharField(max_length=255)
+        body= models.TextField()
+        category = models.CharField(max_length=255)
+        slug= models.SlugField(blank=True, editable=False)
+
+        def save(self):
+        self.slug slugify(self.judul) super(Post, self).save()
+
+        def ___str__(self):
+        return "{}. {}".format(self.id, self.judul)
+
+    * contoh sintaks file admin.py
+    from django.contrib import admin
+    # Register your models here.
+    from .models import Post
+    class PostAdmin (admin.ModelAdmin): 
+        readonly_fields = ['slug', ] // ini yg dicustom agar datanya tetap ditampilkan
+    admin.site.register(Post, PostAdmin)
+        
+- name dan namespace
+    * file urls.py
+    * namespace
+    namespace="blog" // contoh namanya blog
+
+    * contoh file urls.py // untuk root
+    from django.conf.urls import url, include
+    from django.contrib import admin
+
+    from . import views
+
+    urlpatterns = [
+        url(r'^$', views.index, name = "index"),
+        url(r'^blog/',include('blog.urls', namespace="blog")), // ini contoh namespace nya
+        url(r'^admin/',admin.site.urls),
+    ]
+
+    * contoh file urls.py // untuk app
+    from django.conf.urls import url
+
+    from . import views
+
+    urlpatterns = [
+        url(r'^$', views.index, name="index"),
+        url(r'^post/(?P<slugInput>[\w-]+)/$', views.detailPost, name="detail"), // ini contoh namespace nya
+        url(r'^category/(?P<categoryInput>[\w-]+)/$', views.categoryPost, name="category"), // ini contoh namespace nya
+    ]
+
+    * contoh file html
+    <a class="nav-link" href="{% url "admin:index" %}">Admin</a>
+    <a class="nav-link" href="../{{category.category}}">{{category.category}}</a>
+    
+
+=====================================================
+
+=====================================================
+- interaksi form
+
+    - csrf
+    * sintaks
+    {% csrf_token %}
+
+    - menambahkan library form
+    * sintaks
+    from django import forms
+
+    * contoh dengan membuat class baru
+    from django import forms
+
+    class ContactForm(forms.Form):
+        nama 	= forms.CharField()
+        alamat 	= forms.CharField()
+        
+    * contoh integrasi ke file views.py
+    =====================================
+    from django.shortcuts import render
+
+    # import form
+    from .forms import ContactForm
+    # Create your views here.
+
+    def index(request):
+
+        contact_form = ContactForm()
+
+        context = {
+            'heading':'Contact Form',
+            'contact_form':contact_form
+        }
+
+        if request.method == 'POST':
+            context['nama'] = request.POST['nama']
+            context['alamat'] = request.POST['alamat']
+
+        return render(request,'contact/index.html', context)
+    ======================================
+
+    * contoh integrasi dengan file htmlnya
+    <form method = "post">
+		{% csrf_token %}
+		<table>
+			{{contact_form.as_table}}
+		</table>
+		<br>
+		<button type="Submit">Kirim</button>
+	</form>
+
+=====================================================
+
+=====================================================
+- debug 
+- fungsinya untuk mengecek apakah datanya sudah sesuai atau belum
+
+    * sintaks
+    print()
